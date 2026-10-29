@@ -1,0 +1,27 @@
+{
+"type": "FeatureCollection",
+"name": "Major Towns",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::32733" } },
+"features": [
+{"type":"Feature","properties":{"NAME":"Outjo","SIZE":"regional centre"},"geometry":{"type":"Point","coordinates":[621140.625,7777987.0]}},
+{"type":"Feature","properties":{"NAME":"Oshakati","SIZE":"regional centre"},"geometry":{"type":"Point","coordinates":[572984.3125,8034266.5]}},
+{"type":"Feature","properties":{"NAME":"Walvis Bay","SIZE":"regional centre"},"geometry":{"type":"Point","coordinates":[450135.59375,7462380.0]}},
+{"type":"Feature","properties":{"NAME":"Oranjemund","SIZE":"regional centre"},"geometry":{"type":"Point","coordinates":[639394.0625,6843647.0]}},
+{"type":"Feature","properties":{"NAME":"Keetmanshoop","SIZE":"regional centre"},"geometry":{"type":"Point","coordinates":[813769.8125,7057349.5]}},
+{"type":"Feature","properties":{"NAME":"Opuwo","SIZE":"regional centre"},"geometry":{"type":"Point","coordinates":[376424.40625,8002452.5]}},
+{"type":"Feature","properties":{"NAME":"Rundu","SIZE":"regional centre"},"geometry":{"type":"Point","coordinates":[1006961.125,8013315.0]}},
+{"type":"Feature","properties":{"NAME":"Katima Mulilo","SIZE":"regional centre"},"geometry":{"type":"Point","coordinates":[1489445.5,8041610.0]}},
+{"type":"Feature","properties":{"NAME":"Luderitz","SIZE":"regional centre"},"geometry":{"type":"Point","coordinates":[515770.90625,7053913.5]}},
+{"type":"Feature","properties":{"NAME":"Windhoek","SIZE":"capital"},"geometry":{"type":"Point","coordinates":[715181.0,7501078.0]}},
+{"type":"Feature","properties":{"NAME":"Tsumeb","SIZE":"regional centre"},"geometry":{"type":"Point","coordinates":[784765.875,7871867.5]}},
+{"type":"Feature","properties":{"NAME":"Gobabis","SIZE":"regional centre"},"geometry":{"type":"Point","coordinates":[911885.4375,7511876.5]}},
+{"type":"Feature","properties":{"NAME":"Karasburg","SIZE":"regional centre"},"geometry":{"type":"Point","coordinates":[869430.385107527137734,6895228.616906038485467]}},
+{"type":"Feature","properties":{"NAME":"Mariental","SIZE":"local centre"},"geometry":{"type":"Point","coordinates":[798962.853723722393624,7272739.054519830271602]}},
+{"type":"Feature","properties":{"NAME":"Rehoboth","SIZE":"regional centre"},"geometry":{"type":"Point","coordinates":[712556.353371586883441,7421800.646226869896054]}},
+{"type":"Feature","properties":{"NAME":"Karibib","SIZE":"regional centre"},"geometry":{"type":"Point","coordinates":[585385.506941574276425,7573973.5]}},
+{"type":"Feature","properties":{"NAME":"Okahandja","SIZE":"regional centre"},"geometry":{"type":"Point","coordinates":[697902.569441574276425,7568482.013883148320019]}},
+{"type":"Feature","properties":{"NAME":"Otjiwarongo","SIZE":"regional centre"},"geometry":{"type":"Point","coordinates":[671930.645824722829275,7735223.0]}},
+{"type":"Feature","properties":{"NAME":"Otavi","SIZE":"local centre"},"geometry":{"type":"Point","coordinates":[746431.680558425723575,7826371.513883148320019]}},
+{"type":"Feature","properties":{"NAME":"Grootfontein","SIZE":"local centre"},"geometry":{"type":"Point","coordinates":[824114.805558425723575,7833230.0]}}
+]
+}

@@ -1,0 +1,459 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Geosynth Namibia Field Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Public+Sans:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: a field-survey notebook — sticky search bar, layer sections with map-legend swatches, field tables that stack to cards on phones */
+:root{
+  --paper:#f3f4ef; --sheet:#fbfbf8; --ink:#1f2a2e; --muted:#5b6669; --rule:#d6d9d0;
+  --accent:#1f6f6b; --accent-soft:#dcebe7;
+  --admin:#4d6a8f; --mineral:#b0602c; --geo:#7d7a2e; --infra:#6b6b6b;
+  --t-key:#1f6f6b; --t-key-bg:#dcebe7; --t-id:#5b6669; --t-id-bg:#e6e8e2;
+  --t-empty:#8a5a00; --t-empty-bg:#f6e7c8; --t-check:#a1322a; --t-check-bg:#f6dcd8;
+  --f-display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --f-body:"Public Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"Cascadia Mono",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#151b1d; --sheet:#1b2326; --ink:#e4e8e3; --muted:#9aa5a6; --rule:#2f3a3d;
+  --accent:#6cc5bb; --accent-soft:#1e3734;
+  --admin:#8eaad0; --mineral:#e39a64; --geo:#c7c46a; --infra:#a9a9a9;
+  --t-key:#7fd3c8; --t-key-bg:#1e3734; --t-id:#a9b3b4; --t-id-bg:#273033;
+  --t-empty:#f0c46a; --t-empty-bg:#3a3020; --t-check:#f2968c; --t-check-bg:#3d2422;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#151b1d; --sheet:#1b2326; --ink:#e4e8e3; --muted:#9aa5a6; --rule:#2f3a3d;
+  --accent:#6cc5bb; --accent-soft:#1e3734;
+  --admin:#8eaad0; --mineral:#e39a64; --geo:#c7c46a; --infra:#a9a9a9;
+  --t-key:#7fd3c8; --t-key-bg:#1e3734; --t-id:#a9b3b4; --t-id-bg:#273033;
+  --t-empty:#f0c46a; --t-empty-bg:#3a3020; --t-check:#f2968c; --t-check-bg:#3d2422;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font:16px/1.6 var(--f-body);padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:1120px;margin:0 auto}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;line-height:1.15;margin:0}
+h1{font-size:clamp(2rem,5vw,3rem);font-weight:800;letter-spacing:-.02em}
+h2{font-size:1.6rem;font-weight:800}
+h3{font-size:1.1rem;font-weight:600}
+p{margin:0}
+code,.mono{font-family:var(--f-mono);font-size:.86em}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+header.intro{padding-block:40px 24px;display:grid;gap:14px;max-width:72ch}
+.eyebrow{font:600 .75rem/1 var(--f-body);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.lede{font-size:1.08rem;color:var(--muted)}
+
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);border-bottom:1px solid var(--rule);padding-block:12px;display:grid;gap:10px}
+.search{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.search input{flex:1 1 260px;min-width:0;font:inherit;padding:10px 14px;border:1px solid var(--rule);border-radius:8px;background:var(--sheet);color:var(--ink)}
+.search .count{color:var(--muted);font-size:.9rem;font-variant-numeric:tabular-nums}
+.jump{display:flex;gap:6px;flex-wrap:wrap}
+.jump a{font-size:.82rem;text-decoration:none;color:var(--ink);padding:3px 10px;border:1px solid var(--rule);border-radius:999px;background:var(--sheet);display:inline-flex;gap:6px;align-items:center}
+.jump a:hover{border-color:var(--accent)}
+.sw{width:9px;height:9px;border-radius:2px;display:inline-block;flex:none}
+
+.basics{margin-top:32px;display:grid;gap:18px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.card{background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:14px 16px;display:grid;gap:6px;align-content:start}
+.card h3{font-size:1rem}
+.card p{font-size:.94rem;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:10px 18px;font-size:.92rem;align-items:center}
+.tag{font:600 .7rem/1 var(--f-body);letter-spacing:.06em;text-transform:uppercase;padding:4px 7px;border-radius:4px;white-space:nowrap;display:inline-block}
+.tag.key{color:var(--t-key);background:var(--t-key-bg)}
+.tag.id{color:var(--t-id);background:var(--t-id-bg)}
+.tag.empty{color:var(--t-empty);background:var(--t-empty-bg)}
+.tag.check{color:var(--t-check);background:var(--t-check-bg)}
+
+.timeline{overflow-x:auto;background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:14px 16px}
+.timeline table{border-collapse:collapse;width:100%;min-width:560px;font-size:.9rem}
+.timeline th,.timeline td{text-align:left;padding:6px 10px;border-bottom:1px solid var(--rule);vertical-align:top}
+.timeline th{font-weight:600;color:var(--muted);font-size:.78rem;letter-spacing:.06em;text-transform:uppercase}
+.timeline td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+
+section.layer{margin-top:48px;display:grid;gap:16px;scroll-margin-top:120px}
+.lhead{display:grid;gap:8px;border-left:6px solid var(--c);padding-left:14px}
+.lhead .path{color:var(--muted)}
+.lhead p.what{max-width:75ch}
+.facts{display:flex;flex-wrap:wrap;gap:8px}
+.fact{font-size:.85rem;background:var(--sheet);border:1px solid var(--rule);border-radius:6px;padding:4px 10px}
+.fact b{font-weight:600}
+.tips{background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:12px 16px;font-size:.94rem;display:grid;gap:6px}
+.tips ul{margin:0;padding-left:20px;display:grid;gap:4px}
+
+.ftable{width:100%;border-collapse:collapse;background:var(--sheet);border:1px solid var(--rule);border-radius:10px;overflow:hidden}
+.ftable th{text-align:left;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:10px 12px;border-bottom:1px solid var(--rule)}
+.ftable td{padding:12px;border-bottom:1px solid var(--rule);vertical-align:top;font-size:.94rem}
+.ftable tr:last-child td{border-bottom:0}
+.ftable td.fname{width:200px}
+.ftable td.fname code{font-weight:500;word-break:break-word;color:var(--ink)}
+.ftable td.fname .tag{margin-top:6px}
+.ftable td.vals{width:34%;color:var(--muted);font-size:.88rem}
+.ftable td.vals code{color:var(--ink)}
+mark{background:var(--accent-soft);color:inherit;border-radius:2px}
+.none{padding:24px;text-align:center;color:var(--muted)}
+
+@media (max-width:760px){
+  .ftable,.ftable tbody,.ftable tr,.ftable td{display:block;width:100%!important}
+  .ftable thead{display:none}
+  .ftable tr{border-bottom:1px solid var(--rule);padding:6px 0}
+  .ftable td{border:0;padding:4px 14px}
+  .ftable td.fname{padding-top:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .ftable td.fname .tag{margin-top:0}
+  .ftable td.vals{padding-bottom:12px}
+  .ftable td.vals::before{content:"In the data: ";font-weight:600;color:var(--ink)}
+}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+</style>
+
+<div class="wrap">
+<header class="intro">
+  <span class="eyebrow">Geosynth Rebuild · New_05102026</span>
+  <h1>Namibia GIS field guide</h1>
+  <p class="lede">Every layer and every column in the project, explained in plain language. For each field you get what it means, what values are actually in the file, and whether it's worth using.</p>
+</header>
+
+<div class="bar">
+  <div class="search">
+    <label for="q" class="eyebrow" style="flex:none">Find a field</label>
+    <input id="q" type="search" placeholder="Try “copper”, “licence”, “age”, “empty”…" autocomplete="off">
+    <span class="count" id="count"></span>
+  </div>
+  <nav class="jump" id="jump" aria-label="Jump to layer"></nav>
+</div>
+
+<section class="basics" id="basics">
+  <h2>The basics first</h2>
+  <div class="cards">
+    <div class="card"><h3>Layer</h3><p>One map dataset, like one spreadsheet where every row also has a shape on the map. Each <code>.geojson</code> file is one layer.</p></div>
+    <div class="card"><h3>Row (feature)</h3><p>One thing on the map: one town, one road segment, one patch of rock, one mineral find.</p></div>
+    <div class="card"><h3>Field (column)</h3><p>One piece of information recorded for every row, such as a name, a code or a length.</p></div>
+    <div class="card"><h3>Geometry</h3><p>The shape. <b>Point</b> = a dot. <b>Line</b> = a road, fault or dyke. <b>Polygon</b> = an area. “Multi” just means one row can be made of several pieces, like a region that includes islands.</p></div>
+    <div class="card"><h3>Coordinate system (CRS)</h3><p>How positions are written. <b>WGS84</b> = latitude/longitude in degrees. <b>UTM 33S</b> = metres east and north, the usual grid for Namibia. <b>Africa Albers</b> = metres on a whole-of-Africa grid. QGIS converts between them automatically.</p></div>
+    <div class="card"><h3>Empty (null)</h3><p>Nothing was recorded. Some columns are empty in every single row. They were set up for later but never filled.</p></div>
+  </div>
+
+  <h3>How each field is tagged</h3>
+  <div class="legend">
+    <span><span class="tag key">Key</span> the columns you'll actually use</span>
+    <span><span class="tag id">Technical</span> IDs and bookkeeping</span>
+    <span><span class="tag empty">Empty</span> blank in every row</span>
+    <span><span class="tag check">Check</span> has a quirk or error to know about</span>
+  </div>
+
+  <h3>Geological time, as used in this data</h3>
+  <div class="timeline">
+    <table>
+      <thead><tr><th>Name in the data</th><th>Roughly when</th><th>In plain words</th></tr></thead>
+      <tbody>
+        <tr><td>Quaternary</td><td class="num">2.6 Ma – today</td><td>The most recent period: today's sand dunes, river gravels and salt pans.</td></tr>
+        <tr><td>Neogene · Palaeogene (“Tertiary”, T)</td><td class="num">66 – 2.6 Ma</td><td>After the dinosaurs. Kalahari sands, Namib sandstone.</td></tr>
+        <tr><td>Cretaceous · Jurassic · Triassic (Mesozoic)</td><td class="num">252 – 66 Ma</td><td>The dinosaur era. Africa and South America split apart and huge lava floods (Etendeka) poured out.</td></tr>
+        <tr><td>Permian · Carboniferous (Karoo)</td><td class="num">359 – 252 Ma</td><td>Ice ages, then swamps and basins. Gives Namibia's Karoo rocks and coal.</td></tr>
+        <tr><td>Ordovician · Cambrian (Palaeozoic)</td><td class="num">541 – 443 Ma</td><td>Late-stage granites and the upper Nama sediments.</td></tr>
+        <tr><td><b>Namibian</b> = Neoproterozoic</td><td class="num">1000 – 541 Ma</td><td>Namibia's own name for this span. The Damara mountain belt formed when continents collided. Hosts most copper.</td></tr>
+        <tr><td><b>Namaquan</b> = Mesoproterozoic</td><td class="num">1600 – 1000 Ma</td><td>Old, heavily cooked and squeezed rocks of the south (Namaqua).</td></tr>
+        <tr><td><b>Kheisian</b> = Palaeoproterozoic</td><td class="num">2500 – 1600 Ma</td><td>The oldest rocks in the data, deep “basement” below everything else.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="color:var(--muted);font-size:.9rem">Ma = millions of years ago. Ages are approximate standard ranges; the data itself stores names, not numbers.</p>
+</section>
+
+<main id="layers"></main>
+<div class="none" id="none" hidden>No fields match that search. Try a shorter word.</div>
+
+<section class="layer" id="other-files" style="--c:var(--muted)">
+  <div class="lhead">
+    <span class="eyebrow">Supporting files</span>
+    <h2>The files that aren't data</h2>
+  </div>
+  <div class="tips">
+    <ul>
+      <li><b><code>.qmd</code> files</b> (one per layer) are QGIS metadata sidecars, meant to hold a description, author, licence and dates. Nearly all are blank templates. Only <i>Known Mineral Occurences.qmd</i> (“Mineral occurrences and showings (GSN occurrence database and others)”) and <i>Lithostratigraphic Units.qmd</i> (“Lithostratigraphic and lithodemic units”) have a one-line description.</li>
+      <li><b><code>geo_lithostrat_units_by_age.qml</code></b> is a saved QGIS style. It colours the geology layer by its <code>age_name</code> column into 19 legend classes, from “Quaternary — Namib Sand Sea…” down to “Kheisian (Palaeoproterozoic)…”. Load it on the Lithostratigraphic Units layer to get the classic age-coloured geology map.</li>
+      <li><b><code>.png</code> files</b> are finished map pictures exported from QGIS: <i>Namibian Regions.png</i>, <i>Known Mineral Occurences of Namibia.png</i> and <i>Lithostratigraphic Map of Namibia.png</i>. They're for viewing only and contain no data.</li>
+    </ul>
+  </div>
+</section>
+</div>
+
+<script>
+const GROUPS={admin:"var(--admin)",mineral:"var(--mineral)",geo:"var(--geo)",infra:"var(--infra)"};
+// Shared field descriptions for the two OCHA-style boundary layers
+const ADM_COMMON=(lvl)=>[
+ ["adm0_name","Country name.","Always <code>Namibia</code>.","id"],
+ ["adm0_name1","Alternative country name slots (other languages).","Empty.","empty"],
+ ["adm0_name2","Same as above.","Empty.","empty"],
+ ["adm0_name3","Same as above.","Empty.","empty"],
+ ["adm0_pcode","Country code.","Always <code>NA</code>.","id"],
+ ["valid_on","Date these boundaries became the official version.","Always <code>2020-01-09</code>.","id"],
+ ["valid_to","Date these boundaries stopped being valid.","Empty, meaning still current.","empty"],
+ ["area_sqkm",`Size of the ${lvl} in square kilometres.`,"","key"],
+ ["version","Version of the boundary dataset.","Always <code>v01</code>.","id"],
+ ["lang","Language of the names.","Always <code>en</code> (English).","id"],
+ ["lang1","Language of the alternative names.","Empty.","empty"],
+ ["lang2","Same as above.","Empty.","empty"],
+ ["lang3","Same as above.","Empty.","empty"],
+ ["center_lat",`Latitude of the ${lvl}'s centre point, in degrees (negative = south of the equator).`,"","id"],
+ ["center_lon",`Longitude of the ${lvl}'s centre point, in degrees east.`,"","id"],
+];
+const REGION_CODES="<code>NA01</code> Zambezi, <code>NA02</code> Erongo, <code>NA03</code> Hardap, <code>NA04</code> Karas, <code>NA05</code> Kavango East, <code>NA06</code> Khomas, <code>NA07</code> Kunene, <code>NA08</code> Ohangwena, <code>NA09</code> Omaheke, <code>NA10</code> Omusati, <code>NA11</code> Oshana, <code>NA12</code> Oshikoto, <code>NA13</code> Otjozondjupa, <code>NA14</code> Kavango West";
+
+const LAYERS=[
+{id:"country",group:"admin",title:"Namibia Country Border",path:"Base Admin/Namibia Country Border.geojson",
+ rows:"1",geom:"Polygon",crs:"WGS84",row:"the whole country",
+ what:"The outline of Namibia. It's used as a frame for maps and to clip other layers to the national boundary.",
+ fields:[
+  ["ID","A row number from whatever system the file came from.","Always <code>999</code>. Meaningless.","id"],
+  ["NAME","Country name.","<code>Namibia</code>.","key"],
+ ]},
+{id:"regions",group:"admin",title:"Namibian Regions",path:"Base Admin/Namibian Regions.geojson",
+ rows:"14",geom:"Polygon",crs:"WGS84",row:"one of Namibia's 14 administrative regions",
+ what:"The 14 regions (the country's first level of government, like provinces). The column names (<code>adm1_…</code>, <code>pcode</code>) follow the UN humanitarian standard for boundary data, so the file was probably downloaded from that source.",
+ tips:["“adm0” = country, “adm1” = region, “adm2” = constituency. The number is just the level.","Most of the columns are fixed housekeeping. The useful ones are the name, the P-code and the area."],
+ fields:[
+  ["OBJECTID","Row number from the source database.","1 to 14.","id"],
+  ["adm1_name","Region name.","Erongo, Hardap, Karas, Kavango East, Kavango West, Khomas, Kunene, Ohangwena, Omaheke, Omusati, Oshana, Oshikoto, Otjozondjupa, Zambezi.","key"],
+  ["adm1_name1","Alternative region name slots (e.g. in another language).","Empty.","empty"],
+  ["adm1_name2","Same as above.","Empty.","empty"],
+  ["adm1_name3","Same as above.","Empty.","empty"],
+  ["adm1_pcode","“Place code”: a short, stable code for the region. It's safer to join on this than on the name, because names change spelling.",REGION_CODES,"key"],
+  ["adm1_ref_name","Reference spelling of the region name.","Identical to <code>adm1_name</code>.","id"],
+  ...ADM_COMMON("region").map(f=>f[0]==="area_sqkm"?[f[0],f[1],"From 8,652 km² (Oshana) to 161,313 km² (Karas).","key"]:f),
+ ]},
+{id:"constituencies",group:"admin",title:"Namibia Constituencies",path:"Base Admin/Namibia Constituencies.geojson",
+ rows:"107",geom:"Polygon",crs:"WGS84",row:"one constituency (the level below a region)",
+ what:"Constituencies are the electoral and administrative districts inside each region. Each row knows its own name and code plus the region it belongs to.",
+ tips:["Namibia has officially had 121 constituencies since the 2013–14 boundary review, but this file has 107. Treat it as a useful map, not an official count."],
+ fields:[
+  ["OBJECTID","Row number from the source database.","1 to 107.","id"],
+  ["adm2_name","Constituency name.","107 names, e.g. Windhoek Rural, Karibib, Opuwo, Arandis.","key"],
+  ["adm2_name1","Alternative constituency name slots.","Empty.","empty"],
+  ["adm2_name2","Same as above.","Empty.","empty"],
+  ["adm2_name3","Same as above.","Empty.","empty"],
+  ["adm2_pcode","Place code for the constituency: the region code plus two digits.","e.g. <code>NA0901</code> = constituency 01 in region 09 (Omaheke).","key"],
+  ["adm2_ref_name","Reference spelling of the name.","Identical to <code>adm2_name</code>.","id"],
+  ["adm1_name","Name of the region this constituency is in.","14 regions. Omusati has the most constituencies here (12), Kavango West the fewest (3).","key"],
+  ["adm1_name1","Alternative region name slots.","Empty.","empty"],
+  ["adm1_name2","Same as above.","Empty.","empty"],
+  ["adm1_name3","Same as above.","Empty.","empty"],
+  ["adm1_pcode","Code of the parent region. Use it to link to the Regions layer.","Same codes as in the Regions layer.","key"],
+  ...ADM_COMMON("constituency").map(f=>f[0]==="area_sqkm"?[f[0],f[1],"From under 2 km² (small town wards) to 50,339 km². Typical: about 2,100 km².","key"]:f[0]==="center_lat"?[f[0],f[1],"Three pairs of constituencies share an identical value. Harmless, but slightly odd.","id"]:f),
+ ]},
+{id:"towns",group:"admin",title:"Major Towns",path:"Base Admin/Major Towns.geojson",
+ rows:"20",geom:"Point",crs:"UTM 33S (metres)",row:"one town",
+ what:"Twenty main towns, used as labels and reference points on maps.",
+ fields:[
+  ["NAME","Town name.","Windhoek, Walvis Bay, Oshakati, Rundu, Katima Mulilo, Keetmanshoop, Lüderitz (spelt <code>Luderitz</code>), Oranjemund, Tsumeb, Otjiwarongo and others.","key"],
+  ["SIZE","How important the town is as a service centre.","<code>capital</code> (Windhoek), <code>regional centre</code> (16), <code>local centre</code> (Mariental, Otavi, Grootfontein). Mariental is a regional capital, so its label looks too low.","check"],
+ ]},
+
+{id:"minerals",group:"mineral",title:"Known Mineral Occurences",path:"Commodities_Mineral Occurences/Known Mineral Occurences.geojson",
+ rows:"851",geom:"Point",crs:"WGS84",row:"one place where a mineral has been found, explored or mined",
+ what:"The heart of the project. Each dot is a known mineral site, from a single sample showing copper to a working mine. It merges two sources: a critical-raw-materials inventory spreadsheet (679 rows) and the Geological Survey of Namibia's (GSN) occurrence database (172 rows). The project then added region, constituency, host rock and priority labels to every row.",
+ tips:["69 rows are flagged as duplicates of another row (see <code>duplicate_of</code>). Filter those out before counting, which leaves about 782 unique sites.","9 rows aren't really points. They're basins, gas fields or offshore areas drawn as a single dot (see <code>non_point</code>).","The <code>…_src</code> columns keep the original wording. The columns without <code>_src</code> are the project's cleaned-up versions, so use those for analysis."],
+ fields:[
+  ["fid","Internal row number.","1 to 851.","id"],
+  ["occ_id","The project's own unique ID for each site.","<code>INV-0001</code> to <code>INV-0851</code>.","key"],
+  ["occ_name","Name of the site, prospect or mine.","777 different names, e.g. “Uis Pegmatite” (appears 11 times), “Baltika Mine”, “3.5 km SE Krantzberg”. Some names describe a location rather than naming a place.","key"],
+  ["commodity_main","The main mineral or material of interest at the site, as a short code.","<code>Cu</code> copper (421), <code>Sn</code> tin (68), <code>Li</code> lithium (41), <code>F</code> fluorite/fluorspar (36), <code>Pb</code> lead (30), <code>W</code> tungsten (29), <code>REE</code> rare-earth elements (27), <code>Ba</code> barite (26), <code>Au</code> gold (24), <code>Dia</code> diamonds (21), <code>Be</code> beryllium, <code>Mn</code> manganese, <code>Bi</code> bismuth, <code>Fe</code> iron, <code>Ta</code> tantalum, <code>U</code> uranium, <code>Nb</code> niobium, <code>C_gr</code> graphite, <code>Zn</code> zinc, <code>NaCl</code> salt, <code>PO4</code> phosphate, <code>Gem</code> gemstones, <code>Coal</code>, <code>Ni</code> nickel, <code>V</code> vanadium, <code>Co</code> cobalt, <code>Wol</code> wollastonite, <code>Gyp</code> gypsum, <code>Qz</code> quartz, <code>Ti</code> titanium, <code>Sep</code> sepiolite (a clay), <code>Gas</code> natural gas, <code>Diat</code> diatomite (a light powdery rock).","key"],
+  ["commodities_other","Every mineral mentioned at the site, written out as in the source.","Free text and inconsistent: “Copper”, “Cu”, “Copper-Lead-Zinc”, “Lithium, Beryllium, Cesium”, “di (all)” (= diamonds). Fine to read, awkward to filter on.","check"],
+  ["occ_size","Planned column for the size of the deposit (small, medium, large).","Empty in every row.","empty"],
+  ["deposit_type","What kind of geological setting the minerals sit in. Only the GSN rows have this.","Filled for 172 rows: <code>stratiform, stratabound</code> (in a rock layer), <code>vein</code> (filling a crack), <code>pegmatite-hosted</code> (very coarse granite), <code>palaeoplacer</code> (old river or beach gravels), <code>replacement, skarn</code> (rock chemically altered by hot fluids), <code>evaporite</code> (dried-up salty water), <code>calcrete/gypcrete hosted</code> (desert crust), <code>stockwerk, porphyry-type</code> (a mesh of small veins), <code>pipe/plug</code>, <code>intrusive-hosted dissemination</code>, <code>irregular</code>, <code>unspecified</code>.","key"],
+  ["host_unit_id","The ID of the geology polygon the dot sits on. It links straight to <code>unit_id</code> in the Lithostratigraphic Units layer.","<code>GEO-xxxxx</code>. Every value matches a real geology polygon (checked). Missing for 6 offshore or edge sites.","key"],
+  ["host_unit_name","Name of that host rock unit, copied over for convenience.","77 names. Kuiseb (151) is the most common host, then Namaqua, Nosib, Abenab and Swakop.","key"],
+  ["gsn_occ_ref","The site's number in the Geological Survey's own database.","Numbers like <code>556</code>. Filled for 232 rows.","id"],
+  ["deposit_id","Groups several dots that belong to the same deposit.","<code>NA-DEP-xxxx</code>. Filled for 196 rows. Rows sharing an ID are the same ore body.","id"],
+  ["source_dataset","Which of the two original lists the row came from.","<code>CRM_Inventory</code> (679) or <code>GSN 1:1M occurrences</code> (172).","key"],
+  ["src_record","Row or record number in the original source.","Numbers. Value <code>0</code> appears for 9 GSN area-type records.","id"],
+  ["dev_stage","How far the site has progressed, from first discovery to mining. This is the project's cleaned-up version.","<code>OCCURRENCE</code> (509) mineral noted, no real work. <code>GRASSROOTS</code> (122) early exploration. <code>ADV_EXPL</code> (1) advanced exploration. <code>FS</code> (3) feasibility study (testing whether a mine would pay). <code>BROWNFIELD</code> (91) exploring at or around a known mine. <code>PRODUCTION</code> (39) operating mine. <code>CARE_MAINT</code> (6) mine paused but maintained. <code>HISTORICAL</code> (68) old or abandoned mine. <code>UNKNOWN</code> (12).","key"],
+  ["dev_stage_src","The original stage wording before cleanup.","15 variants: Occurrence, dormant, Greenfield, Brownfield, Abandoned Mine, active, Mine, Dormant Mine, “Advanced - Feasibility started”, etc.","id"],
+  ["ops_status_src","Whether anything is happening there now, in the source's original words.","<code>Inactive</code> (390), <code>Active exploration</code>/<code>Active Exploration</code> (184; the same thing in two spellings), <code>Active production</code>/<code>Active Production</code> (40), <code>Withdrawn from pegging</code> (22; closed to new mineral claims), <code>Not pegged</code> (17; no claim held), <code>Active</code>, <code>Care and maintainance</code>, and one <code>Active Production ???</code>. Empty for 179 rows. Can look contradictory next to <code>dev_stage</code>: an old “HISTORICAL” mine can carry “Active exploration” when someone is exploring it again.","check"],
+  ["minerals_other","Extra minerals present that aren't commodities.","Only 5 rows: quartz, epidote, calcite.","id"],
+  ["geology_note","Free-text geological description.","Ranges from a short category (“base & rare metals”) to full paragraphs. Example: “Fluorite in vugs in a light-red porphyry dyke intruding the Salem Granite… Mining by Solvay 1997-2014”.","key"],
+  ["processing_note","How the ore is or was mined and treated.","101 rows, e.g. “Artisanal and small scale mining”, “Crushing, milling and flotation”, “open pit, escavators, ROM and crusher, Jig plant”.","key"],
+  ["resource_text","How much material is there, in the source's own words.","254 rows. Example: “9.7 Mt non-JORC resources of grades between 49% and 11% CaF2”. Mt = million tonnes. Grade = percentage of the useful mineral. “non-JORC” = not prepared to the formal international reporting standard, so treat it as indicative.","key"],
+  ["resource_text_class","What kind of statement <code>resource_text</code> is, so you don't mix sample results with real tonnages.","<code>ASSAY_SAMPLE</code> (155) lab results from rock samples, not a tonnage. <code>RESOURCE</code> (80) a tonnage-and-grade estimate. <code>PRODUCTION_HISTORY</code> (9) how much was mined in the past. <code>ASM_NOTE</code> (9) a note about artisanal/small-scale mining. <code>NOT_RELEASED</code> (1) an estimate exists but isn't public.","key"],
+  ["esg_note","Environmental and safety concerns noted at the site (ESG = environmental, social, governance).","76 rows, e.g. “Mining pits and excavations pose a threat…”, “Contamination via wind blown dust from the tailings”.","key"],
+  ["esg_class","Environmental hazard class, from the source's rating scheme.","21 rows. <code>A</code> (7): mines producing acid or toxic waste, the more serious class. <code>B</code> (14): open pits, abandoned buildings and visual scarring.","key"],
+  ["licence_no","The mineral licence covering the site. EPL = Exclusive Prospecting Licence.","640 rows, 373 different licences, e.g. <code>EPL-8529</code>. 23 rows contain just <code>EPL-</code> with no number.","check"],
+  ["duplicate_of","If this row repeats another site, the <code>occ_id</code> of the row it duplicates.","69 rows filled. Exclude these when counting sites.","check"],
+  ["non_point","Flag for rows that are really an area (a basin, gas field or offshore zone) drawn as one dot.","<code>1</code> for 9 rows: Toscanini Coal, Nui-Sie Pan, Kudu Gas, Offshore diatomites, Offshore phosphates, Mon Repos Quarry, Aranos Basin, Owambo Basin, Waterberg Basin. <code>0</code> for real points.","check"],
+  ["adm1_region","Region code, filled in by checking which region the dot falls in. It uses the international ISO code style, which differs from the P-codes in the Regions layer.","<code>NA-ER</code> Erongo (256), <code>NA-KU</code> Kunene (150), <code>NA-KA</code> Karas (118), <code>NA-KH</code> Khomas (107), <code>NA-OD</code> Otjozondjupa (99), <code>NA-HA</code> Hardap (75), <code>NA-OT</code> Oshikoto (20), <code>NA-OH</code> Omaheke (18), <code>NA-OS</code> Omusati (2). Empty for 6 offshore sites.","key"],
+  ["is_priority_region","Whether the site is in one of the regions the project focuses on.","<code>1</code> = Erongo, Kunene, Karas, Otjozondjupa, Oshikoto (643 sites). <code>0</code> = Khomas, Hardap, Omaheke, Omusati (202 sites).","key"],
+  ["constituency","Constituency the dot falls in.","38 constituencies; Windhoek Rural (106) and Karibib (98) have the most.","key"],
+  ["nam_tier","How important the site's commodities are on a national priority list.","<code>CRITICAL</code> (610), <code>STRATEGIC</code> (144), <code>ESSENTIAL</code> (32), <code>OTHER</code> (30). Empty for 35 rows whose commodity isn't on the list (barite, beryllium, gems, coal, etc.). The same commodity can land in different tiers at different sites, because the tier depends on the site's full mix of minerals.","key"],
+  ["nam_tier_commodities","Which of the site's commodities put it in that tier.","e.g. <code>Cu</code>, <code>Nb, Ta</code>, <code>REE</code>.","key"],
+  ["source_id","Short code for the source. Same information as <code>source_dataset</code>.","<code>SRC-CRM-INV</code> or <code>SRC-GSN-1M</code>.","id"],
+  ["source_ref","Where exactly in the source to find the row.","<code>row 7</code> (spreadsheet row) or <code>GSN_NO 556</code>.","id"],
+  ["date_accessed","When the source data was downloaded.","Always <code>2026-10-05</code>.","id"],
+  ["original_crs","Coordinate system the source used before it was converted to WGS84.","<code>EPSG:4326</code> (latitude/longitude) for the inventory, <code>EPSG:32733</code> (UTM 33S) for GSN.","id"],
+  ["capture_method","How the location was obtained.","Always <code>IMPORT_VECTOR</code>: copied from existing digital data, not digitised by hand or surveyed in the field.","id"],
+  ["data_confidence","Reliability grade for the row (A would be best).","<code>B</code> for all GSN rows, <code>C</code> for all inventory rows. It reflects the source, not each site individually.","key"],
+  ["verified_2src","Whether the site was confirmed by matching it in both sources.","<code>1</code> = confirmed (138), <code>0</code> = found in one source only (713).","key"],
+  ["notes","Comments added during processing.","180 rows, e.g. “Region to assign by spatial join with nam_admin1.” or “Region in source (NA-KA) differs from boundary layer (NA-HA); boundary used.”","id"],
+  ["last_edited","When the row was last changed.","Always <code>2026-10-06T11:33:39Z</code>.","id"],
+ ]},
+
+{id:"litho",group:"geo",title:"Lithostratigraphic Units",path:"Geology/Lithostratigraphic Units.geojson",
+ rows:"6,368",geom:"Polygon",crs:"WGS84",row:"one patch of ground where a particular rock unit is at the surface",
+ what:"The geological map of Namibia (from the Geological Survey's 1:1,000,000 map). Every patch says which rock unit is there, how old it is, what it's made of and where it fits in the family tree of rock units. “Lithostratigraphic” just means “rock layers, named and ordered”. A single named unit appears as many separate patches.",
+ tips:["Rock units nest like folders, from largest to smallest: <b>Supergroup › Group › Subgroup › Formation › Member</b>. Example: Damara Supergroup › Swakop Group › Khomas Subgroup › Kuiseb Formation.","Rocks that were once molten or got heavily squeezed don't sit in neat layers, so they use other words. A <b>Complex</b> is a jumbled mix of old rocks. A <b>Suite</b> is a family of related granites. An <b>Intrusive</b> is a single body of once-molten rock. A <b>Lithodeme</b> is the non-layered equivalent of a formation. A <b>Nappe</b> is a huge rock sheet shoved sideways during mountain building.","Most hierarchy columns are blank for many rows. That's normal, because a unit only fills the levels that apply to it.","A short rock glossary: <b>gneiss</b> = banded rock cooked deep underground; <b>schist</b> = flaky squeezed rock; <b>marble</b> = cooked limestone; <b>quartzite</b> = cooked sandstone; <b>dolerite</b> = dark once-molten rock filling cracks; <b>pegmatite</b> = very coarse granite, often holding lithium, tin and gems; <b>diamictite/tillite</b> = old glacier deposits; <b>pelitic</b> = made from mud; <b>clastic</b> = made of broken grains; <b>mafic/ultramafic</b> = dark, iron- and magnesium-rich."],
+ fields:[
+  ["fid","Internal row number.","1 to 6,368.","id"],
+  ["unit_id","The project's unique ID for each patch. Mineral sites link to it through <code>host_unit_id</code>.","<code>GEO-00001</code> to <code>GEO-06368</code>.","key"],
+  ["unit_name","The rock unit's name. This is the main label.","109 names; Namaqua (651 patches), Dolerite sills and dykes (309), Kuibis (288), Fransfontein (262), Salem (205), Swakop (193)…","key"],
+  ["unit_type","What rank the named unit has in the hierarchy.","<code>FORMATION</code> (1,824), <code>COMPLEX</code> (996), <code>SUITE</code> (819), <code>GROUP</code> (705), <code>SUBGROUP</code> (687), <code>UNDIVIDED</code> (679; not split further), <code>SUPERGROUP</code> (331), <code>LITHODEME</code> (254), <code>MEMBER</code> (73).","key"],
+  ["parent_unit","The next unit up in the hierarchy.","21 values, e.g. Damara, Nama, Khomas, Karoo. Empty for 3,360 patches.","key"],
+  ["supergroup","The biggest family the unit belongs to.","<code>Damara</code> (1,373), <code>Karoo</code> (650), <code>Sinclair</code> (429).","key"],
+  ["group_name","Group level.","16 groups: Nama, Swakop, Nosib, Ecca, Otavi, Etendeka, Stormberg, Rehoboth, Hakos, Mulden, Namib, Kalahari…","key"],
+  ["subgroup","Subgroup level.","Khomas, Kuibis, Schwarzrand, Fish River, Kudis, Tsumeb, Abenab, Ugab, Haib, Vaalgras.","key"],
+  ["formation","Formation level, the basic mappable rock layer.","46 formations, e.g. Kuiseb, Dwyka, Karibib, Neuhof, Etjo.","key"],
+  ["member","Member level, a subdivision of a formation.","Only 73 patches: Huns/Spitzkopf, Nossob, Auob.","id"],
+  ["complex","Complex name, for jumbled old rock bodies.","Namaqua, Gariep, Kunene, Mooirivier, Abbabis, Naukluft Nappe, Huab, Epupa…","key"],
+  ["suite","Suite name, for families of related once-molten rocks.","Fransfontein, Salem, Gamsberg, Red Granite, Post-Karoo, Vioolsdrif, Piksteel, Matchless, Weener, Goas.","key"],
+  ["intrusive","Name of a specific once-molten body.","Nubib Granite, Donkerhuk Granite, Sorris-Sorris Granite, Ozombanda Granite, Spes Bona Syenite…","key"],
+  ["nappe","Which thrust sheet the patch belongs to (Naukluft area only).","31 patches: Upper Nappe / Pavian, Kudu, Dassie, Zebra; Lower Nappe / Rietoog.","id"],
+  ["tectonic_province","The big geological “neighbourhood”, i.e. which major mountain-building event shaped the area.","<code>Damara Belt</code> (mountain belt formed about 550 Ma when continents collided; crosses central Namibia), <code>Pre-Damara basement</code> (older rocks beneath it), <code>Post-Damara cover</code> (younger rocks laid on top: Karoo, Kalahari, Namib), <code>Nama foreland basin</code> (southern basin filled by debris from the rising Damara mountains), <code>Namaqua Metamorphic Province</code> (about 1,100 Ma old belt in the far south), <code>Gariep Belt</code> (coastal fold belt along the lower Orange River).","key"],
+  ["era","Geological era, in international terms.","14 values, Neoproterozoic to Cenozoic (see the timeline at the top). 17 rows show <code>Palaeozoic&#xFFFD;Mesozoic</code>, where a dash got corrupted.","check"],
+  ["age_name","Age name used on the Namibian map. The QML style colours the map by this field.","<code>Namibian</code> (2,113), <code>Namaquan</code> (1,482), <code>Cambrian</code> (827), <code>Kheisian</code> (664), <code>Jurassic to Cretaceous</code>, <code>Cretaceous</code>, <code>Permo-Carboniferous</code>, <code>Permian</code>, <code>Jurassic</code>, <code>Quaternary</code>, <code>Neogene</code>, <code>Ordovician</code>, <code>Triassic</code>, <code>Various</code>, <code>Carboniferous to Triassic</code>, <code>Palaeogene to Neogene</code>, <code>Palaeogene</code>.","key"],
+  ["age_min_ma","Planned column for the youngest possible age, in millions of years.","Empty in every row.","empty"],
+  ["age_max_ma","Planned column for the oldest possible age.","Empty in every row.","empty"],
+  ["lithology","What the rock is made of, using a standard list.","51 values, e.g. “Granite and granitic rocks” (1,420), “Metamorphic complex”, “Marble;schist;quartzite”, “Dolerite”. A semicolon separates several rock types.","key"],
+  ["lith_simplified","Broad rock class. Good for simple colouring.","15 classes: granitic rocks, gneiss, volcanic rocks, mafic to ultramafic intrusive rocks, sandstone/shale, unconsolidated sediments, sandstone/quartzite, pelitic rocks, carbonate rock, marble, diamictite/tillite… Typos in the data: “ulltramafic”, “diamictite//tillite”, and both <code>volcanic rocks</code> and <code>volcanic rock</code>. Empty for 400 patches.","check"],
+  ["rock_types","The original legend wording describing the rocks.","99 descriptions, e.g. “Granite”, “Sandstone, black limestone, conglomerate, shale”, “Para-/orthogneiss, metasedimentary rocks, granite, metabasite dykes”.","key"],
+  ["gsn_map_code","The short label printed on the Geological Survey's paper map. The first letter usually hints at the age.","159 codes, e.g. <code>Nk</code> Kuiseb, <code>Mgf</code> Fransfontein, <code>Jd</code> Jurassic dolerite.","id"],
+  ["lithcode","A more detailed unit code from the source's own coding system.","142 codes, e.g. <code>NKs</code>, <code>MgFF</code>, <code>Jdo</code>.","id"],
+  ["damara_unit","Original source column: the unit's name if it belongs to the Damara rocks.","e.g. “Swakop GP” (GP = Group), “Kuibis SGP” (SGP = Subgroup), “post-tectonic Damara granites”.","id"],
+  ["pre_damara_unit","Original source column: the unit's name if it's older than the Damara.","e.g. “Namaqua MC” (Metamorphic Complex), “Sinclair SQ” (Sequence), “Fransfontein IS” (Intrusive Suite), “Neuhof Fm” (Formation).","id"],
+  ["post_damara_unit","Original source column: the unit's name if it's younger than the Damara.","Karoo SQ, Dolerite, Karoo basalt, surficial deposits, Namib GP, salt pan, carbonatite, Kalahari GP, Pomona Fm…","id"],
+  ["remarks","Mapping notes.","621 patches. “Suboutcrop below Tk, Qn…” means the rock is buried under Kalahari/Namib sand, so its outline is inferred rather than seen. “Undifferentiated…” means several units were lumped together.","key"],
+  ["area_sqkm","Size of the patch in square kilometres.","From 0.1 km² to 187,674 km² (a single Kalahari sand patch). Typical: about 3 km².","key"],
+  ["cgi_lithology_uri","Planned link to the international rock-type vocabulary.","Empty in every row.","empty"],
+  ["adm1_region","Planned region code.","Empty in every row.","empty"],
+  ["is_priority_region","Planned priority-region flag.","Empty in every row.","empty"],
+  ["source_ref","Planned reference into the source.","Empty in every row.","empty"],
+  ["source_id","Code for the source dataset.","Always <code>SRC-GSN-GEO1M</code> (the Geological Survey's 1:1M geology map).","id"],
+  ["date_accessed","When the source was downloaded.","Always <code>2026-10-05</code>.","id"],
+  ["original_crs","Source's coordinate system before conversion.","Always <code>EPSG:32733</code> (UTM 33S).","id"],
+  ["capture_method","How the shapes were obtained.","Always <code>IMPORT_VECTOR</code>.","id"],
+  ["data_confidence","Reliability grade.","Always <code>B</code>.","id"],
+  ["verified_2src","Checked against a second source?","Always <code>0</code> (no).","id"],
+  ["notes","Processing note.","The same sentence in every row: province and era were derived from the source columns.","id"],
+  ["last_edited","When last changed.","Always <code>2026-10-05T02:13:42Z</code>.","id"],
+ ]},
+{id:"dykes250",group:"geo",title:"Dykes_250k",path:"Geology/Structures/Dykes_250k.geojson",
+ rows:"21,645",geom:"Line",crs:"UTM 33S (metres)",row:"one mapped dyke or vein",
+ what:"A <b>dyke</b> is a wall-like sheet of once-molten rock that filled a crack. Seen from above it's a line. A <b>vein</b> is a crack filled by minerals from hot fluids. This layer comes from the detailed 1:250,000 maps and covers many rock types. Most rows are pegmatites (very coarse granite, which can carry lithium, tin, tantalum and gemstones).",
+ tips:["This layer does not contain the Etendeka or Karoo dolerite dykes. Those are in their own layers, so the three can be combined without double-counting."],
+ fields:[
+  ["LITHCODE","Map code for the dyke type. The first capital letter usually hints at the age.","93 codes, e.g. <code>Npe</code> (Namibian-age pegmatite, 7,113), <code>NbGK</code> (Gannakouriep gabbro, 3,129), <code>Mdi</code>, <code>qv</code> (quartz vein).","id"],
+  ["LITHOLOGY","What the dyke is made of.","60 values. Pegmatite (8,550), gabbro;dolerite (3,129), diabase (1,812), quartz vein (1,365), mafic rock, amphibolite, porphyry, alkali granite… Also economically interesting ones: <b>kimberlite</b> (41; the rock that brings up diamonds) and <b>carbonatite</b> (about 94; a source of rare earths). 137 are “unknown”.","key"],
+  ["UNIT","The named rock family the dyke belongs to.","36 units, e.g. Gannakouriep IS (IS = Intrusive Suite), Girtis IS, Jericho Metabasite. Empty for about 70% of rows.","key"],
+  ["ANNOT","Short label shown on the printed map.","e.g. <code>pe</code> pegmatite, <code>GK</code>, <code>di</code> diabase, <code>qv</code> quartz vein.","id"],
+  ["LENGTH","Length of the line in metres.","From 2 m to 28.4 km. Typical: about 370 m.","key"],
+ ]},
+{id:"etendeka",group:"geo",title:"Etendeka Dykes",path:"Geology/Structures/Etendeka Dykes.geojson",
+ rows:"7,704",geom:"Line",crs:"UTM 33S (metres)",row:"one dolerite dyke",
+ what:"Dolerite dykes in north-western Namibia from the Etendeka volcanic event, about 130 million years ago, when Africa and South America were splitting apart. Every row has the same rock type, so the useful information is the location and length.",
+ fields:[
+  ["LITHCODE","Map code.","Always <code>Kdo</code> (K = Cretaceous, do = dolerite).","id"],
+  ["LITHOLOGY","Rock type.","Always <code>dolerite</code>.","id"],
+  ["UNIT","Rock family.","Always <code>Post-Karoo intrusives</code> (one row empty).","id"],
+  ["ANNOT","Map label.","Always <code>do</code>.","id"],
+  ["LENGTH","Length in metres.","From 5 m to 16.4 km. Typical: about 920 m.","key"],
+ ]},
+{id:"karoo",group:"geo",title:"Karoo Dykes",path:"Geology/Structures/Karoo Dykes.geojson",
+ rows:"661",geom:"Line",crs:"UTM 33S (metres)",row:"one dolerite dyke",
+ what:"Dolerite dykes from the Karoo volcanic event, about 180 million years ago, mainly in central and southern-eastern Namibia. They're older than the Etendeka dykes but structured the same way.",
+ fields:[
+  ["LITHCODE","Map code.","Always <code>Jdo</code> (J = Jurassic, do = dolerite).","id"],
+  ["LITHOLOGY","Rock type.","Always <code>dolerite</code>.","id"],
+  ["UNIT","Rock family.","Always <code>Post-Karoo intrusives</code> (one row empty).","id"],
+  ["ANNOT","Map label.","Always <code>do</code>.","id"],
+  ["LENGTH","Length in metres.","From 4 m to 12.9 km. Typical: about 630 m.","key"],
+ ]},
+{id:"faults",group:"geo",title:"Faults",path:"Geology/Structures/Faults.geojson",
+ rows:"1,634",geom:"Line",crs:"UTM 33S (metres)",row:"one mapped fault segment",
+ what:"A <b>fault</b> is a break in the rock where the two sides have moved past each other. Faults matter for exploration because mineral-rich fluids often travel along them.",
+ fields:[
+  ["SYMCODE","Number of the map symbol used to draw the line. It matches <code>TYPE</code> one-to-one.","<code>110</code> Fault, <code>115</code> Thrust, <code>109</code> Fault inferred, <code>117</code> Thrust inferred.","id"],
+  ["TYPE","Kind of fault.","<code>Fault</code> (1,482). <code>Thrust</code> (111): a low-angle fault where one slab was pushed up and over another. <code>…, inferred</code> (41): suspected but not seen directly, usually because it's buried under sand.","key"],
+  ["NAME","Name of the fault, if it has one.","Only 16 segments named: Three Palms Mylonite Zone, Sesfontein Thrust, Mudorib Fault, Schakalsberg Thrust.","key"],
+ ]},
+{id:"contours",group:"geo",title:"Southern African Contours",path:"Geology/Elevation/Southern African Contours_1km_res_500m intervals line.geojson",
+ rows:"85",geom:"Line",crs:"Africa Albers (metres)",row:"one contour line",
+ what:"Contour lines join points of equal height, here every 500 m. The file name says they come from a coarse 1 km grid, so they only give the broad shape of the land. They cover all of southern Africa and the surrounding seabed, not just Namibia.",
+ fields:[
+  ["ELEVATION","The height the line represents, in metres. Negative numbers are depths below sea level (the ocean floor).","From −5,000 m (deep ocean) to +2,500 m. Values in 500 m steps.","key"],
+  ["length_KM","Length of the line in kilometres.","From 506 km to 49,327 km.","id"],
+  ["Status","Meant to mark major versus minor contour lines.","<code>Minor</code> (64), <code>Major</code> (4), and <code>1500</code> (17), which is an elevation number typed into the wrong column. It's on the 1,500 m and 2,000 m lines. Don't rely on this field.","check"],
+ ]},
+
+{id:"roads",group:"infra",title:"Main Roads",path:"Infrastructure/Main Roads.geojson",
+ rows:"336",geom:"Line",crs:"UTM 33S (metres)",row:"one stretch of road between junctions",
+ what:"Namibia's main road network, about 4,570 km in total. It's useful for judging how accessible a mineral site is. Several columns are leftovers from the old ArcInfo GIS format and carry no useful information.",
+ fields:[
+  ["FNODE_","“From node”: the junction number where the segment starts, from the old ArcInfo format.","Mostly <code>0</code> (299 rows). Not usable.","id"],
+  ["TNODE_","“To node”: the junction number where the segment ends.","Mostly <code>0</code>. Not usable.","id"],
+  ["LPOLY_","Old ArcInfo field for the area on the left of the line.","Always <code>0</code>.","empty"],
+  ["RPOLY_","Old ArcInfo field for the area on the right of the line.","Always <code>0</code>.","empty"],
+  ["LENGTH","Segment length in metres.","From 49 m to 118.7 km. Typical: about 8.2 km.","key"],
+  ["ROADS_","Internal sequence number from the old system.","All different; meaningless outside the old system.","id"],
+  ["ROADS_ID","Second internal ID from the old system.","Nearly all different.","id"],
+  ["ID","Road identifier, padded with leading zeros.","e.g. <code>00000002032</code>. Missing for 3 rows. Several segments can share an ID when they belong to the same road.","id"],
+  ["ROAD_ID","The same road number as <code>ID</code>, without the zeros.","Matches <code>ID</code> for 333 rows. <code>0</code> for the 3 rows with no ID.","key"],
+  ["SUB_CAT","Road class.","<code>Trunk_Road_Links</code> (301): national highways, the “B” roads. <code>Main_Road_Links</code> (23): the “C” roads. <code>District_Road_Links</code> (9): “D” roads. Empty for 3.","key"],
+  ["SYMCODE","Number of the map symbol used to draw the road.","<code>14</code> (331) or <code>6</code> (5 main/district segments). Exact meaning undocumented.","id"],
+  ["TYPE","Layer category.","Always <code>main road</code>, even for district roads. Use <code>SUB_CAT</code> instead.","check"],
+ ]},
+];
+
+const GROUP_LABEL={admin:"Base admin",mineral:"Commodities",geo:"Geology",infra:"Infrastructure"};
+const TAG_LABEL={key:"Key",id:"Technical",empty:"Empty",check:"Check"};
+const main=document.getElementById("layers"),jump=document.getElementById("jump");
+
+LAYERS.forEach(L=>{
+  const a=document.createElement("a");a.href="#"+L.id;
+  a.innerHTML=`<span class="sw" style="background:${GROUPS[L.group]}"></span>${L.title}`;jump.appendChild(a);
+  const s=document.createElement("section");s.className="layer";s.id=L.id;s.style.setProperty("--c",GROUPS[L.group]);
+  s.innerHTML=`<div class="lhead">
+    <span class="eyebrow">${GROUP_LABEL[L.group]}</span>
+    <h2>${L.title}</h2>
+    <code class="path">${L.path}</code>
+    <p class="what">${L.what}</p>
+    <div class="facts">
+      <span class="fact"><b>${L.rows}</b> rows</span>
+      <span class="fact">Each row = ${L.row}</span>
+      <span class="fact">Shape: <b>${L.geom}</b></span>
+      <span class="fact">Coordinates: <b>${L.crs}</b></span>
+      <span class="fact"><b>${L.fields.length}</b> fields</span>
+    </div></div>
+    ${L.tips?`<div class="tips"><b>Good to know</b><ul>${L.tips.map(t=>`<li>${t}</li>`).join("")}</ul></div>`:""}
+    <div style="overflow-x:auto"><table class="ftable"><thead><tr><th>Field</th><th>What it means</th><th>What's actually in it</th></tr></thead><tbody>
+    ${L.fields.map(([n,m,v,t])=>`<tr data-tag="${t}"><td class="fname"><code>${n}</code><br><span class="tag ${t}">${TAG_LABEL[t]}</span></td><td class="mean">${m}</td><td class="vals">${v||"Numeric values."}</td></tr>`).join("")}
+    </tbody></table></div>`;
+  main.appendChild(s);
+});
+const oa=document.createElement("a");oa.href="#other-files";oa.innerHTML=`<span class="sw" style="background:var(--muted)"></span>Other files`;jump.appendChild(oa);
+
+const q=document.getElementById("q"),count=document.getElementById("count"),none=document.getElementById("none");
+const rows=[...document.querySelectorAll(".ftable tbody tr")];
+rows.forEach(r=>{r._html=[...r.cells].map(c=>c.innerHTML);r._text=(r.textContent+" "+r.dataset.tag+" "+TAG_LABEL[r.dataset.tag]).toLowerCase()});
+const total=rows.length;
+function esc(s){return s.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")}
+function hl(html,term){if(!term)return html;const re=new RegExp("("+esc(term)+")","gi");return html.split(/(<[^>]+>)/).map(p=>p.startsWith("<")?p:p.replace(re,"<mark>$1</mark>")).join("")}
+function run(){
+  const t=q.value.trim().toLowerCase();let shown=0;
+  rows.forEach(r=>{const ok=!t||r._text.includes(t);r.hidden=!ok;if(ok){shown++;[...r.cells].forEach((c,i)=>c.innerHTML=hl(r._html[i],t))}});
+  document.querySelectorAll("section.layer[id]:not(#other-files)").forEach(s=>{s.hidden=!!t&&!s.querySelector("tbody tr:not([hidden])")});
+  document.getElementById("basics").hidden=!!t;document.getElementById("other-files").hidden=!!t;
+  none.hidden=shown>0;
+  count.textContent=t?`${shown} of ${total} fields`:`${total} fields across ${LAYERS.length} layers`;
+}
+q.addEventListener("input",run);run();
+</script>
+
+</body></html>
