@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Geosynth Namibia</title>
+
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            color: #18332e;
+        }
+
+        header {
+            height: 76px;
+            padding: 14px 24px;
+            background: #143d32;
+            color: white;
+        }
+
+        h1 { margin: 0 0 6px; font-size: 23px; }
+        header p { margin: 0; font-size: 14px; }
+        #map { height: calc(100vh - 76px); }
+
+        #commodity_filter {
+            position: absolute;
+            top: 90px;
+            left: 60px;
+            z-index: 1000;
+            background: white;
+            padding: 10px 12px;
+            border-radius: 6px;
+            box-shadow: 0 2px 12px #0003;
+            max-height: 55vh;
+            overflow-y: auto;
+            max-width: calc(100vw - 80px);
+        }
+
+        select, input, button {
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font: inherit;
+        }
+
+        select {
+            margin-left: 8px;
+            max-width: 220px;
+        }
+
+        button { cursor: pointer; }
+        button:disabled { cursor: default; }
+
+        .filter-row { margin-top: 10px; }
+
+        #distance_controls {
+            margin-top: 12px;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+
+        #distance_input {
+            width: 70px;
+            margin-left: 8px;
+        }
+
+        #commodity_count, #distance_status {
+            display: block;
+            margin-top: 8px;
+            font-size: 12px;
+        }
+
+        #status {
+            position: absolute;
+            bottom: 30px;
+            left: 12px;
+            z-index: 1000;
+            max-width: 340px;
+            padding: 12px;
+            background: white;
+            border-radius: 6px;
+            box-shadow: 0 2px 12px #0003;
+            font-size: 13px;
+        }
+
+        .popup-details {
+            max-height: 280px;
+            overflow-y: auto;
+        }
+
+        .popup-details p { margin: 8px 0; }
+
+        .geology-legend {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            max-height: 260px;
+            max-width: 260px;
+            overflow: auto;
+            font-size: 12px;
+            box-shadow: 0 2px 12px #0003;
+        }
+
+        .legend-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 7px;
+        }
+
+        .legend-swatch {
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0;
+            border: 1px solid #666;
+        }
+
+        .leaflet-control-layers {
+            max-height: 40vh;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Geosynth Namibia</h1>
+        <p>Explore mineral occurrences, regions and towns</p>
+    </header>
+
+    <div id="commodity_filter">
+        <label for="commodity_select">
+            <strong>Main commodity:</strong>
+        </label>
+
+        <select id="commodity_select" disabled>
+            <option value="">All commodities</option>
+        </select>
+
+        <div class="filter-row">
+            <label for="region_select"><strong>Region:</strong></label>
+            <select id="region_select" disabled>
+                <option value="">All regions</option>
+            </select>
+        </div>
+
+        <span id="commodity_count">Loading mineral records...</span>
+
+        <div id="distance_controls">
+            <label for="town_select"><strong>Near town:</strong></label>
+            <select id="town_select" disabled>
+                <option value="">Select a town</option>
+            </select>
+
+            <div class="filter-row">
+                <label for="distance_input"><strong>Within:</strong></label>
+                <input
+                    id="distance_input"
+                    type="number"
+                    min="1"
+                    max="500"
+                    value="50"
+                >
+                <span>km</span>
+            </div>
+
+            <div class="filter-row">
+                <button id="distance_search_button" type="button" disabled>
+                    Search nearby
+                </button>
+                <button id="distance_reset_button" type="button" disabled>
+                    Clear distance
+                </button>
+            </div>
+
+            <span id="distance_status" aria-live="polite"></span>
+        </div>
+    </div>
+
+    <div id="map"></div>
+    <div id="status" aria-live="polite">Loading map datasets...</div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        const status_element = document.getElementById("status");
+
+        const COMMODITY_NAMES = {
+            Au: "Gold",
+            Ba: "Barite",
+            Be: "Beryllium",
+            Bi: "Bismuth",
+            C_gr: "Graphite",
+            Co: "Cobalt",
+            Coal: "Coal",
+            Cu: "Copper",
+            Dia: "Diamond",
+            Diat: "Diatomite",
+            F: "Fluorite",
+            Fe: "Iron",
+            Gas: "Gas",
+            Gem: "Gemstones",
+            Gyp: "Gypsum",
+            Li: "Lithium",
+            Mn: "Manganese",
+            NaCl: "Salt (halite)",
+            Nb: "Niobium",
+            Ni: "Nickel",
+            PO4: "Phosphate",
+            Pb: "Lead",
+            Qz: "Quartz",
+            REE: "Rare earth elements",
+            Sep: "Sepiolite",
+            Sn: "Tin",
+            Ta: "Tantalum",
+            Ti: "Titanium",
+            U: "Uranium",
+            V: "Vanadium",
+            W: "Tungsten",
+            Wol: "Wollastonite",
+            Zn: "Zinc"
+        };
+
+        const COMMODITY_COLORS = {
+            Cu: "#d97706",
+            Au: "#eab308",
+            U: "#7c3aed",
+            Fe: "#dc2626",
+            Mn: "#92400e",
+            Zn: "#0284c7",
+            Pb: "#475569",
+            F: "#16a34a"
+        };
+
+        const REGION_NAMES = {
+            "NA-ER": "Erongo",
+            "NA-HA": "Hardap",
+            "NA-KA": "Karas",
+            "NA-KH": "Khomas",
+            "NA-KU": "Kunene",
+            "NA-OD": "Otjozondjupa",
+            "NA-OH": "Omaheke",
+            "NA-OS": "Omusati",
+            "NA-OT": "Oshikoto"
+        };
+
+        const GEOLOGY_COLORS = {
+            "Quaternary": "rgb(249, 249, 127)",
+            "Neogene": "rgb(255, 230, 25)",
+            "Palaeogene to Neogene": "rgb(254, 194, 78)",
+            "Palaeogene": "rgb(253, 154, 82)",
+            "Cretaceous": "rgb(127, 198, 78)",
+            "Jurassic to Cretaceous": "rgb(89, 190, 155)",
+            "Jurassic": "rgb(52, 178, 201)",
+            "Triassic": "rgb(129, 43, 146)",
+            "Carboniferous to Triassic": "rgb(156, 90, 140)",
+            "Permian": "rgb(240, 64, 40)",
+            "Permo-Carboniferous": "rgb(200, 106, 80)",
+            "Ordovician — late Salem-suite granites": "rgb(0, 146, 112)",
+            "Cambrian": "rgb(127, 160, 86)",
+            "Namibian": "rgb(254, 204, 92)",
+            "Namaquan": "rgb(254, 217, 154)",
+            "Kheisian": "rgb(247, 104, 152)",
+            "Various": "rgb(204, 204, 204)"
+        };
+
+        const map = L.map("map", {
+            preferCanvas: true
+        }).setView([-22.5, 17.5], 6);
+
+        const background_map = L.tileLayer(
+            "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+            {
+                maxZoom: 19,
+                attribution:
+                    '&copy; <a href="https://www.openstreetmap.org/copyright">' +
+                    'OpenStreetMap</a> contributors'
+            }
+        ).addTo(map);
+
+        const layer_control = L.control.layers(
+            { "Street map": background_map },
+            {},
+            { collapsed: false }
+        ).addTo(map);
+
+        L.control.scale({ imperial: false }).addTo(map);
+
+        // Keep geology below boundary lines and point markers.
+        map.createPane("geology_pane");
+        map.getPane("geology_pane").style.zIndex = 350;
+
+        map.createPane("boundary_pane");
+        map.getPane("boundary_pane").style.zIndex = 450;
+
+        map.createPane("point_pane");
+        map.getPane("point_pane").style.zIndex = 500;
+
+        // Create popups without interpreting record values as HTML.
+        function create_popup(title, details) {
+            const container = document.createElement("div");
+            container.className = "popup-details";
+
+            const heading = document.createElement("h3");
+            heading.textContent = title || "Unnamed feature";
+            container.appendChild(heading);
+
+            for (const [label, value] of details) {
+                const paragraph = document.createElement("p");
+                const label_element = document.createElement("strong");
+                label_element.textContent = `${label}: `;
+
+                paragraph.appendChild(label_element);
+                paragraph.appendChild(document.createTextNode(
+                    value === null || value === undefined || value === ""
+                        ? "Not recorded"
+                        : String(value)
+                ));
+
+                container.appendChild(paragraph);
+            }
+
+            return container;
+        }
+
+        // Bind a popup using configured property names.
+        function create_popup_handler(title_field, fallback_title, fields) {
+            return (feature, layer) => {
+                const properties = feature.properties || {};
+                const title = properties[title_field] || fallback_title;
+
+                const details = fields.map(
+                    ([label, property_name]) => [
+                        label,
+                        properties[property_name]
+                    ]
+                );
+
+                layer.bindPopup(create_popup(title, details));
+            };
+        }
+
+        // Identify a mineral occurrence and its commodity on hover.
+        function add_mineral_tooltip(layer, properties, commodity_label) {
+            const tooltip_content = document.createElement("div");
+
+            const occurrence_title = document.createElement("strong");
+            occurrence_title.textContent =
+                properties.occ_name || "Unnamed occurrence";
+
+            const commodity_description = document.createElement("div");
+            commodity_description.textContent =
+                commodity_label || "Commodity not recorded";
+
+            tooltip_content.appendChild(occurrence_title);
+            tooltip_content.appendChild(commodity_description);
+
+            layer.bindTooltip(tooltip_content, {
+                direction: "top",
+                sticky: true
+            });
+        }
+
+        // Connect commodity, region and town-distance searches.
+        function connect_mineral_filters(dataset, layer) {
+            const commodity_select =
+                document.getElementById("commodity_select");
+            const region_select = document.getElementById("region_select");
+            const commodity_count =
+                document.getElementById("commodity_count");
+            const town_select = document.getElementById("town_select");
+            const distance_input = document.getElementById("distance_input");
+            const search_button =
+                document.getElementById("distance_search_button");
+            const reset_button =
+                document.getElementById("distance_reset_button");
+            const distance_status =
+                document.getElementById("distance_status");
+
+            let active_features = dataset.features;
+            let search_sequence = 0;
+            let active_distance_label = "";
+
+            commodity_select.replaceChildren(
+                new Option("All commodities", "")
+            );
+            region_select.replaceChildren(new Option("All regions", ""));
+
+            const commodities = [...new Set(
+                dataset.features
+                    .map(feature => feature.properties?.commodity_main)
+                    .filter(value =>
+                        value !== null && value !== undefined && value !== ""
+                    )
+            )].sort();
+
+            for (const commodity of commodities) {
+                const label = COMMODITY_NAMES[commodity]
+                    ? `${COMMODITY_NAMES[commodity]} (${commodity})`
+                    : commodity;
+
+                commodity_select.add(new Option(label, commodity));
+            }
+
+            const region_codes = [...new Set(
+                dataset.features
+                    .map(feature => feature.properties?.adm1_region)
+                    .filter(value =>
+                        value !== null && value !== undefined && value !== ""
+                    )
+            )].sort((first, second) =>
+                (REGION_NAMES[first] || first).localeCompare(
+                    REGION_NAMES[second] || second
+                )
+            );
+
+            for (const region_code of region_codes) {
+                region_select.add(new Option(
+                    REGION_NAMES[region_code] || region_code,
+                    region_code
+                ));
+            }
+
+            if (dataset.features.some(
+                feature => !feature.properties?.adm1_region
+            )) {
+                region_select.add(new Option(
+                    "Region not recorded",
+                    "__missing__"
+                ));
+            }
+
+            // Apply both filters to the active distance results.
+            function update_mineral_filter() {
+                const matching_features = active_features.filter(feature => {
+                    const properties = feature.properties || {};
+
+                    const matches_commodity =
+                        commodity_select.value === "" ||
+                        properties.commodity_main === commodity_select.value;
+
+                    const matches_region =
+                        region_select.value === "" ||
+                        (
+                            region_select.value === "__missing__"
+                                ? !properties.adm1_region
+                                : properties.adm1_region === region_select.value
+                        );
+
+                    return matches_commodity && matches_region;
+                });
+
+                layer.clearLayers();
+                layer.addData({
+                    type: "FeatureCollection",
+                    features: matching_features
+                });
+
+                if (!map.hasLayer(layer)) {
+                    layer.addTo(map);
+                }
+
+                commodity_count.textContent =
+                    `${matching_features.length} of ` +
+                    `${dataset.features.length} mineral records`;
+
+                distance_status.textContent = active_distance_label;
+
+                return matching_features.length;
+            }
+
+            // Populate town choices from the database.
+            async function load_search_towns() {
+                const response = await fetch("/api/layers/towns");
+
+                if (!response.ok) {
+                    throw new Error(
+                        `Town loading failed: HTTP ${response.status}`
+                    );
+                }
+
+                const town_dataset = await response.json();
+
+                const town_names = [...new Set(
+                    town_dataset.features
+                        .map(feature => feature.properties?.NAME)
+                        .filter(Boolean)
+                )].sort();
+
+                town_select.replaceChildren(
+                    new Option("Select a town", "")
+                );
+
+                for (const town_name of town_names) {
+                    town_select.add(new Option(town_name, town_name));
+                }
+
+                town_select.disabled = false;
+                search_button.disabled = false;
+            }
+
+            // Request nearby records and retain the current filters.
+            async function search_nearby() {
+                const town_name = town_select.value;
+                const distance_km = Number(distance_input.value);
+
+                if (!town_name) {
+                    distance_status.textContent = "Select a town first.";
+                    return;
+                }
+
+                if (
+                    !Number.isFinite(distance_km) ||
+                    distance_km < 1 ||
+                    distance_km > 500
+                ) {
+                    distance_status.textContent =
+                        "Enter a distance from 1 to 500 km.";
+                    return;
+                }
+
+                const request_sequence = ++search_sequence;
+                search_button.disabled = true;
+                reset_button.disabled = false;
+                distance_status.textContent =
+                    "Searching nearby mineral records...";
+
+                try {
+                    const parameters = new URLSearchParams({
+                        town: town_name,
+                        distance_km: String(distance_km)
+                    });
+
+                    const response = await fetch(
+                        `/api/search/near-town?${parameters}`
+                    );
+
+                    if (!response.ok) {
+                        throw new Error(
+                            `Distance search failed: HTTP ${response.status}`
+                        );
+                    }
+
+                    const results = await response.json();
+
+                    if (
+                        results.type !== "FeatureCollection" ||
+                        !Array.isArray(results.features)
+                    ) {
+                        throw new Error(
+                            "Distance search returned invalid GeoJSON."
+                        );
+                    }
+
+                    if (request_sequence !== search_sequence) {
+                        return;
+                    }
+
+                    active_features = results.features;
+                    active_distance_label =
+                        `Within ${distance_km} km of ${town_name} ` +
+                        "(straight-line distance).";
+
+                    const matching_count = update_mineral_filter();
+
+                    if (matching_count > 0) {
+                        const bounds = layer.getBounds();
+
+                        if (bounds.isValid()) {
+                            map.fitBounds(bounds, {
+                                padding: [40, 40],
+                                maxZoom: 11
+                            });
+                        }
+                    }
+                } catch (error) {
+                    if (request_sequence === search_sequence) {
+                        distance_status.textContent =
+                            `${error.message} ` +
+                            "Previous results remain displayed.";
+                    }
+
+                    console.error(error);
+                } finally {
+                    if (request_sequence === search_sequence) {
+                        search_button.disabled = false;
+                    }
+                }
+            }
+
+            // Clear the distance restriction and retain other selections.
+            function clear_distance() {
+                search_sequence += 1;
+                active_features = dataset.features;
+                active_distance_label = "";
+                search_button.disabled = false;
+                reset_button.disabled = true;
+                update_mineral_filter();
+            }
+
+            commodity_select.onchange = update_mineral_filter;
+            region_select.onchange = update_mineral_filter;
+            search_button.onclick = search_nearby;
+            reset_button.onclick = clear_distance;
+
+            commodity_select.disabled = false;
+            region_select.disabled = false;
+            update_mineral_filter();
+
+            load_search_towns().catch(error => {
+                distance_status.textContent = error.message;
+                console.error(error);
+            });
+        }
+
+        // Display the geological age palette.
+        function add_geology_legend() {
+            const legend = L.control({ position: "bottomright" });
+
+            legend.onAdd = () => {
+                const container = document.createElement("div");
+                container.className = "geology-legend";
+
+                const heading = document.createElement("strong");
+                heading.textContent = "Geological age";
+                container.appendChild(heading);
+
+                const entries = [
+                    ...Object.entries(GEOLOGY_COLORS),
+                    ["Other / no age", "rgb(230, 230, 230)"]
+                ];
+
+                for (const [age_name, color] of entries) {
+                    const row = document.createElement("div");
+                    row.className = "legend-row";
+
+                    const swatch = document.createElement("span");
+                    swatch.className = "legend-swatch";
+                    swatch.style.backgroundColor = color;
+
+                    const label = document.createElement("span");
+                    label.textContent = age_name;
+
+                    row.appendChild(swatch);
+                    row.appendChild(label);
+                    container.appendChild(row);
+                }
+
+                L.DomEvent.disableClickPropagation(container);
+                L.DomEvent.disableScrollPropagation(container);
+
+                return container;
+            };
+
+            legend.addTo(map);
+        }
+
+        // Fetch a complete database layer and register it on the map.
+        async function load_layer(configuration) {
+            const response = await fetch(
+                `/api/layers/${configuration.layer_name}`
+            );
+
+            if (!response.ok) {
+                throw new Error(
+                    `${configuration.name}: HTTP ${response.status}`
+                );
+            }
+
+            const dataset = await response.json();
+
+            if (
+                dataset.type !== "FeatureCollection" ||
+                !Array.isArray(dataset.features)
+            ) {
+                throw new Error(
+                    `${configuration.name}: invalid GeoJSON`
+                );
+            }
+
+            const layer = L.geoJSON(dataset, configuration.options);
+            layer_control.addOverlay(layer, configuration.name);
+
+            if (configuration.visible) {
+                layer.addTo(map);
+            }
+
+            if (configuration.layer_name === "mineral_occurrences") {
+                connect_mineral_filters(dataset, layer);
+            }
+
+            return layer;
+        }
+
+        // Load all 12 layers and report individual failures.
+        async function start_map() {
+            const errors = [];
+            let loaded_count = 0;
+
+            add_geology_legend();
+
+            const configurations = [
+                {
+                    name: "Country border",
+                    layer_name: "country_boundary",
+                    visible: true,
+                    options: {
+                        pane: "boundary_pane",
+                        interactive: false,
+                        style: {
+                            color: "#143d32",
+                            weight: 3,
+                            fill: false
+                        }
+                    }
+                },
+                {
+                    name: "Regions",
+                    layer_name: "regions",
+                    visible: true,
+                    options: {
+                        pane: "boundary_pane",
+                        style: {
+                            color: "#64748b",
+                            weight: 1,
+                            fill: false
+                        },
+                        onEachFeature: create_popup_handler(
+                            "adm1_name",
+                            "Region",
+                            [["Region code", "adm1_pcode"]]
+                        )
+                    }
+                },
+                {
+                    name: "Towns",
+                    layer_name: "towns",
+                    visible: true,
+                    options: {
+                        pointToLayer: (feature, location) =>
+                            L.circleMarker(location, {
+                                pane: "point_pane",
+                                radius: 6,
+                                color: "#ffffff",
+                                weight: 2,
+                                fillColor: "#143d32",
+                                fillOpacity: 1
+                            }),
+                        // Show the town name on hover and its details on click.
+onEachFeature: (feature, layer) => {
+    const properties = feature.properties || {};
+    const town_name = properties.NAME || "Unnamed town";
+
+    const tooltip_content = document.createElement("div");
+
+    const town_title = document.createElement("strong");
+    town_title.textContent = town_name;
+
+    const town_classification = document.createElement("div");
+    town_classification.textContent =
+        properties.SIZE || "Classification not recorded";
+
+    tooltip_content.appendChild(town_title);
+    tooltip_content.appendChild(town_classification);
+
+    layer.bindTooltip(tooltip_content, {
+        direction: "top",
+        sticky: true
+    });
+
+    layer.bindPopup(create_popup(
+        town_name,
+        [["Classification", properties.SIZE]]
+    ));
+}
+                    }
+                },
+                {
+                    name: "Mineral occurrences",
+                    layer_name: "mineral_occurrences",
+                    visible: true,
+                    options: {
+                        pointToLayer: (feature, location) =>
+                            L.circleMarker(location, {
+                                pane: "point_pane",
+                                radius: 5,
+                                color: "#ffffff",
+                                weight: 1,
+                                fillColor: COMMODITY_COLORS[
+                                    feature.properties?.commodity_main
+                                ] || "#db2777",
+                                fillOpacity: 0.9
+                            }),
+                        onEachFeature: (feature, layer) => {
+                            const properties = feature.properties || {};
+                            const commodity = properties.commodity_main;
+
+                            const commodity_label = COMMODITY_NAMES[commodity]
+                                ? `${COMMODITY_NAMES[commodity]} (${commodity})`
+                                : commodity;
+
+                            add_mineral_tooltip(
+                                layer,
+                                properties,
+                                commodity_label
+                            );
+
+                            const details = [
+                                ["Reference", properties.occ_id],
+                                ["Main commodity", commodity_label],
+                                ["Other commodities", properties.commodities_other],
+                                ["Region", REGION_NAMES[properties.adm1_region]
+                                    || properties.adm1_region],
+                                ["Constituency", properties.constituency],
+                                ["Host unit", properties.host_unit_name],
+                                ["Geology", properties.geology_note],
+                                ["Source", properties.source_id],
+                                ["Source reference", properties.source_ref],
+                                ["Confidence code", properties.data_confidence],
+                                ["Date accessed", properties.date_accessed]
+                            ];
+
+                            if (
+                                typeof properties.distance_km === "number"
+                            ) {
+                                details.unshift([
+                                    "Distance from searched town",
+                                    `${properties.distance_km.toFixed(2)} km`
+                                ]);
+                            }
+
+                            layer.bindPopup(create_popup(
+                                properties.occ_name,
+                                details
+                            ));
+                        }
+                    }
+                },
+                {
+                    name: "Geological units",
+                    layer_name: "geological_units",
+                    visible: true,
+                    options: {
+                        pane: "geology_pane",
+                        style: (feature) => ({
+                            color: "rgb(110, 110, 110)",
+                            weight: 0.5,
+                            fillColor: GEOLOGY_COLORS[
+                                feature.properties?.age_name
+                            ] || "rgb(230, 230, 230)",
+                            fillOpacity: 1
+                        }),
+                        onEachFeature: create_popup_handler(
+                            "unit_name",
+                            "Geological unit",
+                            [
+                                ["Unit reference", "unit_id"],
+                                ["Era", "era"],
+                                ["Age name", "age_name"],
+                                ["Lithology", "lithology"],
+                                ["Rock types", "rock_types"],
+                                ["Tectonic province", "tectonic_province"],
+                                ["Source", "source_id"]
+                            ]
+                        )
+                    }
+                },
+                {
+                    name: "Constituencies",
+                    layer_name: "constituencies",
+                    visible: false,
+                    options: {
+                        pane: "boundary_pane",
+                        style: {
+                            color: "#94a3b8",
+                            weight: 1,
+                            fill: false
+                        },
+                        onEachFeature: create_popup_handler(
+                            "adm2_name",
+                            "Constituency",
+                            [["Region", "adm1_name"]]
+                        )
+                    }
+                },
+                {
+                    name: "Main roads",
+                    layer_name: "roads",
+                    visible: false,
+                    options: {
+                        pane: "boundary_pane",
+                        style: {
+                            color: "#b45309",
+                            weight: 2
+                        }
+                    }
+                },
+                {
+                    name: "Faults",
+                    layer_name: "faults",
+                    visible: false,
+                    options: {
+                        pane: "boundary_pane",
+                        style: (feature) => ({
+                            color: "#b91c1c",
+                            weight: 2,
+                            dashArray: /inferred/i.test(
+                                feature.properties?.TYPE || ""
+                            ) ? "6 4" : null
+                        }),
+                        onEachFeature: create_popup_handler(
+                            "NAME",
+                            "Geological fault",
+                            [
+                                ["Type", "TYPE"],
+                                ["Symbol code", "SYMCODE"]
+                            ]
+                        )
+                    }
+                },
+                ...[
+                    {
+                        name: "Dykes — 250k",
+                        layer_name: "dykes_250k",
+                        color: "#7c3aed"
+                    },
+                    {
+                        name: "Etendeka dykes",
+                        layer_name: "etendeka_dykes",
+                        color: "#0369a1"
+                    },
+                    {
+                        name: "Karoo dykes",
+                        layer_name: "karoo_dykes",
+                        color: "#92400e"
+                    }
+                ].map(configuration => ({
+                    name: configuration.name,
+                    layer_name: configuration.layer_name,
+                    visible: false,
+                    options: {
+                        pane: "boundary_pane",
+                        style: {
+                            color: configuration.color,
+                            weight: 1.5
+                        },
+                        onEachFeature: create_popup_handler(
+                            "UNIT",
+                            configuration.name,
+                            [
+                                ["Lithology", "LITHOLOGY"],
+                                ["Unit", "UNIT"],
+                                ["Lithology code", "LITHCODE"],
+                                ["Annotation", "ANNOT"]
+                            ]
+                        )
+                    }
+                })),
+                {
+                    name: "Elevation contours",
+                    layer_name: "contours",
+                    visible: false,
+                    options: {
+                        pane: "boundary_pane",
+                        style: {
+                            color: "#78350f",
+                            weight: 1,
+                            opacity: 0.7
+                        },
+                        onEachFeature: create_popup_handler(
+                            "NAME",
+                            "Elevation contour",
+                            [
+                                ["Elevation (source value)", "ELEVATION"],
+                                ["Status", "Status"],
+                                ["Length (km)", "length_KM"]
+                            ]
+                        )
+                    }
+                }
+            ];
+
+            for (const configuration of configurations) {
+                status_element.textContent =
+                    `Loading ${configuration.name.toLowerCase()}...`;
+
+                try {
+                    const layer = await load_layer(configuration);
+                    loaded_count += 1;
+
+                    if (
+                        configuration.layer_name === "country_boundary"
+                    ) {
+                        const bounds = layer.getBounds();
+
+                        if (bounds.isValid()) {
+                            map.fitBounds(bounds, {
+                                padding: [24, 24]
+                            });
+                        }
+                    }
+                } catch (error) {
+                    console.error(error);
+                    errors.push(error.message);
+
+                    if (
+                        configuration.layer_name === "mineral_occurrences"
+                    ) {
+                        document.getElementById(
+                            "commodity_count"
+                        ).textContent = "Mineral records failed to load.";
+                    }
+                }
+            }
+
+            status_element.textContent = errors.length
+                ? `${loaded_count}/12 layers loaded. ${errors.join("; ")}`
+                : "All 12 layers loaded from PostGIS. " +
+                  "Hover over mineral markers or click for details.";
+        }
+
+        start_map();
+    </script>
+</body>
+</html>
