@@ -1,10 +1,11 @@
+import os
 import json
 from collections.abc import Iterator
-from getpass import getpass
 from pathlib import Path
 
 import psycopg
 import uvicorn
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import RedirectResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
@@ -12,6 +13,10 @@ from psycopg import sql
 
 
 PROJECT_DIRECTORY = Path(__file__).resolve().parent.parent
+
+# Load variables from the .env file in the project root, no matter
+# which folder the script is started from.
+load_dotenv(PROJECT_DIRECTORY / ".env")
 
 LAYER_TABLES = {
     "towns": "towns",
@@ -33,12 +38,12 @@ app = FastAPI(title="Geosynth Namibia")
 
 # Open a database connection with read-only transactions.
 def connect_database() -> psycopg.Connection:
+    database_url = os.getenv("DATABASE_URL")
+    if not database_url:
+        raise ValueError("DATABASE_URL is not set in the environment or .env file.")
+
     return psycopg.connect(
-        host="127.0.0.1",
-        port=5432,
-        dbname="geosynth_demo",
-        user="postgres",
-        password=app.state.database_password,
+        database_url,
         connect_timeout=10,
         options="-c default_transaction_read_only=on",
     )
@@ -224,10 +229,8 @@ app.mount(
 )
 
 
-# Verify credentials and start the local server using Winloop.
+# Verify the database connection and start the local server using Winloop.
 def main():
-    app.state.database_password = getpass("PostgreSQL password: ")
-
     with connect_database() as connection:
         connection.execute("SELECT 1")
 
